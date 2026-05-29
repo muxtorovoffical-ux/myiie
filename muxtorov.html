@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Muxtorov</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:          #07070a;
+  --bg-card:     rgba(255, 252, 242, 0.032);
+  --bg-btn:      rgba(255, 252, 242, 0.028);
+  --bg-btn-h:    rgba(255, 252, 242, 0.058);
+  --border:      rgba(197, 160, 89, 0.18);
+  --border-h:    rgba(197, 160, 89, 0.42);
+  --gold:        #c5a059;
+  --gold-pale:   #d4b87a;
+  --cream:       rgba(255, 252, 240, 0.88);
+  --cream-dim:   rgba(255, 252, 240, 0.38);
+  --cream-ghost: rgba(255, 252, 240, 0.18);
+  --serif:       'Cormorant Garamond', Georgia, serif;
+  --sans:        'Jost', sans-serif;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  background-color: var(--bg);
+  color: var(--cream);
+  font-family: var(--sans);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px 52px;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── Grain overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.7;
+}
+
+/* ── Ambient glow ── */
+body::after {
+  content: '';
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(197,160,89,0.065) 0%, transparent 68%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -52%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Card ── */
+.card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  backdrop-filter: blur(22px) saturate(1.4);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  padding: 52px 36px 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: cardIn 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* subtle inner edge shimmer */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255,252,240,0.04) 0%,
+    transparent 50%,
+    rgba(197,160,89,0.025) 100%
+  );
+  pointer-events: none;
+}
+
+/* ── Monogram ── */
+.monogram {
+  width: 62px;
+  height: 62px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 28px;
+  animation: fadeUp 0.9s 0.15s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.monogram::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px solid rgba(197,160,89,0.08);
+}
+
+.monogram span {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--gold-pale);
+}
+
+/* ── Name ── */
+h1.name {
+  font-family: var(--serif);
+  font-size: 42px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  color: var(--cream);
+  text-align: center;
+  text-transform: uppercase;
+  animation: fadeUp 0.9s 0.22s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.handle {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 200;
+  letter-spacing: 0.28em;
+  color: var(--cream-ghost);
+  text-transform: uppercase;
+  margin-top: 8px;
+  animation: fadeUp 0.9s 0.28s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+/* ── Gold rule ── */
+.rule {
+  width: 48px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 28px 0;
+  animation: ruleIn 1s 0.4s ease both;
+}
+
+@keyframes ruleIn {
+  from { width: 0; opacity: 0; }
+  to   { width: 48px; opacity: 1; }
+}
+
+/* ── Bio ── */
+.bio {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--cream-dim);
+  text-align: center;
+  line-height: 1.7;
+  max-width: 280px;
+  animation: fadeUp 0.9s 0.34s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.bio em {
+  font-style: normal;
+  color: var(--gold-pale);
+}
+
+/* ── Buttons ── */
+.btn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  width: 100%;
+  margin-top: 34px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 17px 20px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--bg-btn);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  text-decoration: none;
+  color: var(--cream);
+  transition:
+    background 0.32s ease,
+    border-color 0.32s ease,
+    transform 0.28s cubic-bezier(0.16,1,0.3,1),
+    box-shadow 0.32s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, rgba(197,160,89,0.055) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.32s ease;
+}
+
+.btn:hover {
+  background: var(--bg-btn-h);
+  border-color: var(--border-h);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(197,160,89,0.07), 0 2px 8px rgba(0,0,0,0.4);
+}
+.btn:hover::before { opacity: 1; }
+.btn:active { transform: translateY(-1px); }
+
+.btn-icon {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(197,160,89,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--serif);
+  font-size: 14px;
+  color: var(--gold);
+  transition: border-color 0.32s, color 0.32s;
+}
+.btn:hover .btn-icon {
+  border-color: rgba(197,160,89,0.5);
+  color: var(--gold-pale);
+}
+
+.btn-text { flex: 1; }
+
+.btn-title {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cream);
+  line-height: 1.2;
+}
+
+.btn-sub {
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--cream-ghost);
+  margin-top: 3px;
+  transition: color 0.28s;
+}
+.btn:hover .btn-sub { color: var(--cream-dim); }
+
+.btn-arrow {
+  font-size: 14px;
+  color: var(--gold);
+  opacity: 0.5;
+  transition: opacity 0.28s, transform 0.28s cubic-bezier(0.16,1,0.3,1);
+  flex-shrink: 0;
+  letter-spacing: -0.05em;
+}
+.btn:hover .btn-arrow {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+.btn-n1 { animation: fadeUp 0.9s 0.46s cubic-bezier(0.16,1,0.3,1) both; }
+.btn-n2 { animation: fadeUp 0.9s 0.54s cubic-bezier(0.16,1,0.3,1) both; }
+
+/* ── Thin second rule ── */
+.rule-sm {
+  width: 24px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(197,160,89,0.35), transparent);
+  margin-top: 38px;
+  animation: fadeUp 0.9s 0.6s ease both;
+}
+
+/* ── Footer ── */
+.footer {
+  margin-top: 18px;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 200;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--cream-ghost);
+  text-align: center;
+  animation: fadeUp 0.9s 0.65s ease both;
+}
+
+.footer span {
+  color: rgba(197,160,89,0.45);
+}
+
+/* ── Keyframes ── */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive polish ── */
+@media (max-width: 440px) {
+  .card { padding: 44px 24px 38px; }
+  h1.name { font-size: 36px; }
+}
+
+@media (max-height: 640px) {
+  body { padding: 32px 20px 36px; justify-content: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Monogram -->
+  <div class="monogram" aria-hidden="true">
+    <span>M</span>
+  </div>
+
+  <!-- Name & handle -->
+  <h1 class="name">Muxtorov</h1>
+  <p class="handle">@im_muxtorov</p>
+
+  <!-- Divider -->
+  <div class="rule" aria-hidden="true"></div>
+
+  <!-- Bio -->
+  <p class="bio">
+    A private diary made public.<br>
+    <em>Thoughts, stillness &amp; the quiet</em><br>
+    art of living deliberately.
+  </p>
+
+  <!-- Buttons -->
+  <div class="btn-list">
+
+    <a href="https://t.me/mxtrv17" class="btn btn-n1" target="_blank" rel="noopener">
+      <div class="btn-icon" aria-hidden="true">✦</div>
+      <div class="btn-text">
+        <div class="btn-title">Telegram Channel</div>
+        <div class="btn-sub">Thoughts, lifestyle &amp; daily insights</div>
+      </div>
+      <div class="btn-arrow" aria-hidden="true">→</div>
+    </a>
+
+    <a href="https://t.me/im_muxtorov" class="btn btn-n2" target="_blank" rel="noopener">
+      <div class="btn-icon" aria-hidden="true">◇</div>
+      <div class="btn-text">
+        <div class="btn-title">Personal Contact</div>
+        <div class="btn-sub">Direct message / Get in touch</div>
+      </div>
+      <div class="btn-arrow" aria-hidden="true">→</div>
+    </a>
+
+  </div>
+
+  <!-- Footer rule + text -->
+  <div class="rule-sm" aria-hidden="true"></div>
+  <p class="footer">Muxtorov &nbsp;<span>·</span>&nbsp; MMXXVI</p>
+
+</div>
+
+</body>
+</html>
